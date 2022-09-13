@@ -1,7 +1,7 @@
 {
-  "name": "backend_express_boilerplate",
+  "name": "rebuy_backend",
   "version": "1.0.0",
-  "description": "A boilerplate for starting new Backend with ExpressJS and Authentication .",
+  "description": "Rebuy is a old product buy sell platform.",
   "main": "index.js",
   "scripts": {
     "start": "node index",
@@ -10,17 +10,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ataur39n-sharif/backend_express_boilerplate.git"
+    "url": "git+https://github.com/ataur39n-sharif/rebuy-backend.git"
   },
   "keywords": [
-    "express_backend_boilerplate"
+    "rebuy"
   ],
   "author": "Ataur Rahman",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ataur39n-sharif/backend_express_boilerplate/issues"
+    "url": "https://github.com/ataur39n-sharif/rebuy-backend.git/issues"
   },
-  "homepage": "https://github.com/ataur39n-sharif/backend_express_boilerplate#readme",
+  "homepage": "https://github.com/ataur39n-sharif/rebuy-backend.git#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",

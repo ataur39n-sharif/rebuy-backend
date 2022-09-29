@@ -14,9 +14,8 @@ const AuthorizeUser = async (req, res, next) => {
 
         if (verifyToken) {
             req.email = verifyToken.email
-            req.userId = verifyToken?.UID
-            req.role = verifyToken?.role
-            req.authorized = true
+            req.PID = verifyToken.PID
+            req.role = verifyToken.role
             next()
         } else {
             return res.status(400).json({

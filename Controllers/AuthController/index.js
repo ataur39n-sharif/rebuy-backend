@@ -4,6 +4,7 @@ const UserModel = require("../../Models/User/User.model")
 const jwt = require("jsonwebtoken")
 const AccountConfirmRequestMail = require("../../Mailer/ConfirmAccount")
 const ForgetPasswordRequestMail = require("../../Mailer/ForgetPassword")
+const ProfileModel = require("../../Models/Profile/Profile.model")
 
 const AuthController = {
     //login
@@ -42,7 +43,7 @@ const AuthController = {
             }
 
             //generate accessToken for user and return as response
-            const token = jwt.sign({ email: user.email, role: user.role, UID: user._id }, process.env.JWT_SECRET, {
+            const token = jwt.sign({ email: user.email, role: user.role, PID: user.PID }, process.env.JWT_SECRET, {
                 expiresIn: '24h'
             })
 
@@ -97,7 +98,7 @@ const AuthController = {
             const regUser = await UserModel.create({ ...validData.value, password: hash })
 
             //send verify email
-            const response = await AccountConfirmRequestMail({ userEmail: validData.value.email, callBack_url: validData.value.callBack_url })
+            const response = await AccountConfirmRequestMail({ name: validData.value.name, userEmail: validData.value.email, callBack_url: validData.value.callBack_url })
 
             if (response.success) {
                 return res.status(200).json({
@@ -148,9 +149,13 @@ const AuthController = {
                     })
                 }
 
+                //create profile
+                const profile = await ProfileModel.create({ name: validToken.name, email: validToken.email })
+
                 //update user email verify status
                 const updateEmailStatus = await UserModel.findOneAndUpdate({ email: validToken.email }, {
-                    emailVerified: true
+                    emailVerified: true,
+                    PID: profile._id
                 })
 
                 return res.status(200).json({
@@ -343,7 +348,7 @@ const AuthController = {
     delete_user: async (req, res) => {
         try {
             const id = req.userId
-
+            //delete from a
             await UserModel.findOneAndDelete({ _id: id })
             return res.status(200).json({
                 success: true,

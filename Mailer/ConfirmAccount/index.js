@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 const mailTransporter = require("../../Config/NodeMailer/nodemailer.config");
 
-const AccountConfirmRequestMail = async ({ userEmail, callBack_url }) => {
+const AccountConfirmRequestMail = async ({ name, userEmail, callBack_url }) => {
 
     //create a token 
-    const token = jwt.sign({ email: userEmail }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ email: userEmail, name }, process.env.JWT_SECRET, {
         expiresIn: "5m"
     })
 

@@ -25,7 +25,11 @@ const dataSchema = new mongoose.Schema({
     },
     emailVerified: {
         type: Boolean,
-        default: ""
+        default: false
+    },
+    PID: {
+        type: mongoose.Types.ObjectId,
+        ref: 'profile'
     }
 }, {
     timestamps: true,

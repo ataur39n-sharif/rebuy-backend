@@ -73,7 +73,7 @@ const AuthController = {
                 password: Joi.string().required(),
                 callBack_url: Joi.string().required()
             })
-            const validData = dataSchema.validate({ name, email, password, callBack_url: acc_verify_url || 'http://localhost:5000' })
+            const validData = dataSchema.validate({ name, email, password, callBack_url: acc_verify_url || 'http://localhost:3000' })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
@@ -123,7 +123,9 @@ const AuthController = {
     //email confirmation
     email_confirmation: async (req, res) => {
         try {
-            const { token } = req.params
+            const { token } = req.query
+
+            console.log(token)
 
             //expected data schema
             const dataSchema = Joi.object({
@@ -150,7 +152,7 @@ const AuthController = {
                 }
 
                 //create profile
-                const profile = await ProfileModel.create({ name: validToken.name, email: validToken.email })
+                const profile = await ProfileModel.create({ name: status.name, email: validToken.email })
 
                 //update user email verify status
                 const updateEmailStatus = await UserModel.findOneAndUpdate({ email: validToken.email }, {
@@ -185,7 +187,7 @@ const AuthController = {
                 email: Joi.string().email().required(),
                 callBack_url: Joi.string().required()
             })
-            const validData = dataSchema.validate({ email, callBack_url: acc_verify_url })
+            const validData = dataSchema.validate({ email, callBack_url: acc_verify_url || "http://localhost:3000" })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
@@ -194,6 +196,12 @@ const AuthController = {
             }
 
             const user = await UserModel.findOne({ email: validData.value.email })
+            if (!user) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid request ."
+                })
+            }
             if (user.emailVerified) {
                 return res.status(400).json({
                     success: false,

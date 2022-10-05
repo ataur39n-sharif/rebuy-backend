@@ -5,7 +5,7 @@ const dataSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    email: {
+    contact_email: {
         type: String,
         required: true,
     },

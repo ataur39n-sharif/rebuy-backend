@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const express = require('express')
 const cors = require('cors')
+const path = require('path')
 const mongoose = require('mongoose')
 const mailTransporter = require('./Config/NodeMailer/nodemailer.config')
 
@@ -10,6 +11,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 app.use('/', require('./Routes/index'))
+app.use('/', express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 5000
 

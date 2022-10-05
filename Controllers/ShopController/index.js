@@ -1,5 +1,6 @@
 const Joi = require("joi")
 const ShopModel = require("../../Models/Shop/Shop.model")
+const getFileLink = require("../../utils/FileUpload/FileUpload.utils")
 
 const ShopController = {
     //create shop
@@ -7,6 +8,13 @@ const ShopController = {
         try {
             const { shopName, shopLocation, TIN, image, availAbleTime } = req.body
 
+            let imgUrl;
+            if (req.file) {
+                const generateUrl = await getFileLink('shop', req.file)
+                if (generateUrl.success) {
+                    imgUrl = generateUrl.link
+                }
+            }
             //expect data schema
             const dataSchema = Joi.object({
                 shopName: Joi.string().required(),
@@ -17,14 +25,22 @@ const ShopController = {
                     openTime: Joi.string(),
                     closeTime: Joi.string()
                 }).optional(),
-                owner: Joi.string().required()
+                owner: Joi.string().required(),
+                openTime: Joi.string(),
+                closeTime: Joi.string()
             })
             //valid data schema
-            const validData = dataSchema.validate({ ...req.body, owner: '633afd483f4118b8e91a5141' })
+            const validData = dataSchema.validate({
+                ...req.body, image: imgUrl, owner: '633afd483f4118b8e91a5141', availAbleTime: {
+                    openTime: req.body.openTime,
+                    closeTime: req.body.closeTime
+                }
+            })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.details
+                    error: validData.error.details,
+                    validData
                 })
             }
 
@@ -47,6 +63,13 @@ const ShopController = {
     //update shop
     update_shop: async (req, res) => {
         try {
+            let imgUrl;
+            if (req.file) {
+                const generateUrl = await getFileLink('shop', req.file)
+                if (generateUrl.success) {
+                    imgUrl = generateUrl.link
+                }
+            }
             //expect data schema
             const dataSchema = Joi.object({
                 shopId: Joi.string().required(),
@@ -57,10 +80,16 @@ const ShopController = {
                 availAbleTime: Joi.object({
                     openTime: Joi.string().required(),
                     closeTime: Joi.string().required()
-                }).optional()
+                }).optional(),
             })
             //valid data schema
-            const validData = dataSchema.validate({ ...req.body, shopId: req.params.id })
+            const validData = dataSchema.validate({
+                ...req.body, image: imgUrl, shopId: req.params.id, availAbleTime: req.body.availAbleTime && {
+                    openTime: JSON.parse(req.body.availAbleTime)?.openTime,
+                    closeTime: JSON.parse(req.body.availAbleTime)?.closeTime
+                }
+            })
+
             if (validData.error) {
                 return res.status(400).json({
                     success: false,

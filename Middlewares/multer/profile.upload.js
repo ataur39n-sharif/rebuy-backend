@@ -4,7 +4,7 @@ const date = new Date().getTime()
 // multer upload 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './uploads/profile')
+        cb(null, './public/uploads/profile')
     },
 
     filename: function (req, file, cb) {

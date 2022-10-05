@@ -27,13 +27,14 @@ const ProductController = {
             //data validation
             const dataSchema = Joi.object({
                 productName: Joi.string().required(),
-                condition: Joi.string().allow(['used', 'new']).required(),
+                condition: Joi.string().valid('used', 'new').required(),
                 price: Joi.number().required(),
                 description: Joi.string().required(),
                 sellerNote: Joi.string().optional(),
-                PID: Joi.string().required()
+                PID: Joi.string().required(),
+                images: Joi.array()
             })
-            const validData = dataSchema.validate({ productName, images, condition, description, price, sellerNote, PID })
+            const validData = dataSchema.validate({ productName, images: [], condition, description, price, sellerNote, PID: "633afd483f4118b8e91a5141" })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
@@ -83,14 +84,15 @@ const ProductController = {
 
             //data validation
             const dataSchema = Joi.object({
+                images: Joi.array(),
                 productName: Joi.string(),
-                condition: Joi.string().allow(['used', 'new']),
+                condition: Joi.string().valid('used', 'new'),
                 price: Joi.number(),
                 description: Joi.string(),
                 sellerNote: Joi.string(),
                 productId: Joi.string().required()
             })
-            const validData = dataSchema.validate({ productName, images, condition, description, price, sellerNote, productId })
+            const validData = dataSchema.validate({ productName, images:[], condition, description, price, sellerNote, productId })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
@@ -99,7 +101,7 @@ const ProductController = {
             }
 
             //update product
-            await ProductModel.findOneAndUpdate({ _id: validData.value.productId }, { ...validData.value, productId: 0 })
+            await ProductModel.findOneAndUpdate({ _id: validData.value.productId }, { ...validData.value })
             return res.status(200).json({
                 success: true,
                 message: 'Product update successfully.'
@@ -118,8 +120,22 @@ const ProductController = {
             const { productId } = req.params
             const PID = req.PID
 
-            const validProductId = await validObjectId(productId)
-            const validPID = await validObjectId(PID)
+            //expected data schema
+            const dataSchema = Joi.object({
+                productId: Joi.string().required(),
+                permission: Joi.string().required()
+            })
+            //valid data
+            const validData = dataSchema.validate({ productId, permission: PID || "633afd483f4118b8e91a5141" })
+            if (validData.error) {
+                return res.status(400).json({
+                    success: false,
+                    error: validData.error.details
+                })
+            }
+
+            const validProductId = await validObjectId(validData.value.productId)
+            const validPID = await validObjectId(validData.value.permission)
 
             if (!validProductId || !validPID) {
                 return res.status(401).json({
@@ -127,9 +143,9 @@ const ProductController = {
                 })
             }
 
-            const product = await ProductModel.findOne({ _id: productId })
-            if (product.PID === PID) {
-                await ProductModel.findOneAndDelete({ _id: productId })
+            const product = await ProductModel.findOne({ _id: validData.value.productId })
+            if (product.PID.toString() === validData.value.permission) {
+                await ProductModel.findOneAndDelete({ _id: validData.value.productId })
                 return res.status(200).json({
                     success: true,
                     message: "Deleted Successfully."

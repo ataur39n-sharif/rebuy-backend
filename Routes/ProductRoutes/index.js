@@ -6,8 +6,8 @@ ProductRoute
     .get('/', ProductController.allProducts)
     .get('/search/:q', ProductController.searchProducts)
     .post('/', ProductController.newProduct)
-    .put('/', ProductController.updateProductInfo)
-    .delete('/', ProductController.deleteProduct)
+    .put('/:productId', ProductController.updateProductInfo)
+    .delete('/:productId', ProductController.deleteProduct)
 
 module.exports = ProductRoute
 

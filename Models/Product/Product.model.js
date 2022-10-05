@@ -25,13 +25,14 @@ const dataSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['sold', 'unsold'],
+        default: 'unsold',
         required: true
     },
     totalView: {
         type: Number,
         default: 0,
     },
-    seller_note: {
+    sellerNote: {
         type: String,
         required: true,
     },

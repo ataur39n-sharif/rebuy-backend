@@ -1,5 +1,6 @@
 const Joi = require("joi")
 const ProductModel = require("../../Models/Product/Product.model")
+const getFileLink = require("../../utils/FileUpload/FileUpload.utils")
 const validObjectId = require("../../utils/validator/mongo-objectId.validator")
 const ProductController = {
     //products list
@@ -20,6 +21,18 @@ const ProductController = {
     //add new product
     newProduct: async (req, res) => {
         try {
+
+            let imgUrl = [];
+            if (req.files.length > 0) {
+                for (let i = 0; i <= req.files.length; i++) {
+                    const element = req.files[i];
+                    const generateUrl = await getFileLink('product', element)
+                    if (generateUrl.success) {
+                        imgUrl.push(generateUrl.link)
+                    }
+                }
+            }
+
             const { productName, images, condition, description, price, sellerNote } = req.body
 
             const PID = req.PID
@@ -34,7 +47,7 @@ const ProductController = {
                 PID: Joi.string().required(),
                 images: Joi.array()
             })
-            const validData = dataSchema.validate({ productName, images: [], condition, description, price, sellerNote, PID: "633afd483f4118b8e91a5141" })
+            const validData = dataSchema.validate({ productName, images: imgUrl, condition, description, price, sellerNote, PID: "633afd483f4118b8e91a5141" })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
@@ -80,7 +93,18 @@ const ProductController = {
     updateProductInfo: async (req, res) => {
         try {
             const { productId } = req.params
-            const { productName, images, condition, description, price, sellerNote } = req.body
+            const { productName, images, condition, description, price, sellerNote, status } = req.body
+
+            let imgUrl = [];
+            if (req.files.length > 0) {
+                for (let i = 0; i <= req.files.length; i++) {
+                    const element = req.files[i];
+                    const generateUrl = await getFileLink('product', element)
+                    if (generateUrl.success) {
+                        imgUrl.push(generateUrl.link)
+                    }
+                }
+            }
 
             //data validation
             const dataSchema = Joi.object({
@@ -90,9 +114,10 @@ const ProductController = {
                 price: Joi.number(),
                 description: Joi.string(),
                 sellerNote: Joi.string(),
-                productId: Joi.string().required()
+                productId: Joi.string().required(),
+                status: Joi.string().valid('sold', 'unsold')
             })
-            const validData = dataSchema.validate({ productName, images:[], condition, description, price, sellerNote, productId })
+            const validData = dataSchema.validate({ status, productName, images: imgUrl, condition, description, price, sellerNote, productId })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,

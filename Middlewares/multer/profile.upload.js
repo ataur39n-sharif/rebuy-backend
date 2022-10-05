@@ -12,6 +12,7 @@ const storage = multer.diskStorage({
     }
 })
 
+
 var profileUpload = multer({ storage: storage })
 
 module.exports = profileUpload

@@ -5,7 +5,7 @@ const ProductRoute = require('express').Router()
 
 ProductRoute
     .get('/', ProductController.allProducts)
-    .get('/search/:q', ProductController.searchProducts)
+    .get('/search', ProductController.searchProducts)
     .post('/', productUpload.array('images'), ProductController.newProduct)
     .put('/:productId', productUpload.array('images'), ProductController.updateProductInfo)
     .delete('/:productId', ProductController.deleteProduct)

@@ -33,7 +33,7 @@ const ProductController = {
                 }
             }
 
-            const { productName, images, condition, description, price, sellerNote } = req.body
+            const { productName, images, sell_location, category, condition, description, price, sellerNote } = req.body
 
             const PID = req.PID
 
@@ -45,9 +45,15 @@ const ProductController = {
                 description: Joi.string().required(),
                 sellerNote: Joi.string().optional(),
                 PID: Joi.string().required(),
-                images: Joi.array()
+                images: Joi.array(),
+                category: Joi.string().required(),
+                sell_location: Joi.string().required()
             })
-            const validData = dataSchema.validate({ productName, images: imgUrl, condition, description, price, sellerNote, PID: "633afd483f4118b8e91a5141" })
+            const validData = dataSchema.validate({
+                productName,
+                sell_location: sell_location.toLowerCase(),
+                images: imgUrl, condition, category, description, price, sellerNote, PID: "633afd483f4118b8e91a5141"
+            })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
@@ -72,12 +78,40 @@ const ProductController = {
     //search product
     searchProducts: async (req, res) => {
         try {
-            const { q } = req.params
-            const searchResult = await ProductModel.find({
-                $or: [
-                    { productName: { $regex: q } }
-                ]
-            })
+            const { productName, category, location } = req.query
+            let searchResult = []
+
+            if (productName && !category) {
+                const result = await ProductModel.find({
+                    $or: [
+                        { productName: { $regex: productName || "" } }
+                    ]
+                })
+                searchResult = result
+            } else if (category && !productName) {
+                const result = await ProductModel.find({
+                    $or: [
+                        { category: { $regex: category || "" } }
+                    ]
+                })
+                searchResult = result
+            } else if (category && productName) {
+                const result = await ProductModel.find({
+                    $or: [
+                        { productName: { $regex: productName } },
+                        { category: { $regex: category } }
+                    ]
+                })
+                searchResult = result
+            } else {
+                const result = await ProductModel.find({
+                    $or: [
+                        { productName: { $regex: "" } }
+                    ]
+                })
+                searchResult = result
+            }
+
             return res.status(200).json({
                 success: true,
                 searchResult
@@ -93,7 +127,7 @@ const ProductController = {
     updateProductInfo: async (req, res) => {
         try {
             const { productId } = req.params
-            const { productName, images, condition, description, price, sellerNote, status } = req.body
+            const { productName, images, sell_location, category, condition, description, price, sellerNote, status } = req.body
 
             let imgUrl = [];
             if (req.files.length > 0) {
@@ -115,9 +149,15 @@ const ProductController = {
                 description: Joi.string(),
                 sellerNote: Joi.string(),
                 productId: Joi.string().required(),
-                status: Joi.string().valid('sold', 'unsold')
+                status: Joi.string().valid('sold', 'unsold'),
+                category: Joi.string(),
+                sell_location: Joi.string()
             })
-            const validData = dataSchema.validate({ status, productName, images: imgUrl, condition, description, price, sellerNote, productId })
+            const validData = dataSchema.validate({
+                status,
+                sell_location: sell_location?.toLowerCase(),
+                category, productName, images: imgUrl, condition, description, price, sellerNote, productId
+            })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,

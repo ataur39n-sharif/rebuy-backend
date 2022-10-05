@@ -28,9 +28,17 @@ const dataSchema = new mongoose.Schema({
         default: 'unsold',
         required: true
     },
+    category: {
+        type: String,
+        required: true
+    },
     totalView: {
         type: Number,
         default: 0,
+    },
+    sell_location: {
+        type: String,
+        required: true
     },
     sellerNote: {
         type: String,

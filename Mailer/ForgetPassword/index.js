@@ -9,10 +9,10 @@ const ForgetPasswordRequestMail = async ({ userEmail, callBack_url }) => {
     })
 
     //create verify url
-    const link = `${callBack_url}/?token=${token}`
+    const link = `${callBack_url}?token=${token}`
 
     const report = await mailTransporter.sendMail({
-        from: 'Support <support@ataur.dev>',
+        from: 'Support <contact@ataur.dev>',
         to: userEmail,
         replyTo: "noreply@ataur.dev",
         subject: "Account recovery request .",
@@ -25,7 +25,6 @@ const ForgetPasswordRequestMail = async ({ userEmail, callBack_url }) => {
         </div>
         `
     })
-
     if (report.messageId) {
         return {
             success: true,

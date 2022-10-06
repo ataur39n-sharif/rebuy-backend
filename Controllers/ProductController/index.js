@@ -78,7 +78,7 @@ const ProductController = {
     //search product
     searchProducts: async (req, res) => {
         try {
-            const { productName, category, location } = req.query
+            const { productName, category, premium, location } = req.query
             let searchResult = []
 
             if (productName && !category) {
@@ -86,14 +86,23 @@ const ProductController = {
                     $or: [
                         { productName: { $regex: productName || "" } }
                     ]
-                })
-                searchResult = result
+                }).sort({ createdAt: -1 })
+                const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
+                searchResult = location ? response : result
             } else if (category && !productName) {
                 const result = await ProductModel.find({
                     $or: [
                         { category: { $regex: category || "" } }
                     ]
-                })
+                }).sort({ createdAt: -1 })
+                const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
+                searchResult = location ? response : result
+            } else if (premium && !category && !productName) {
+                const result = await ProductModel.find({
+                    $or: [
+                        { isPremium: premium }
+                    ]
+                }).sort({ createdAt: -1 })
                 searchResult = result
             } else if (category && productName) {
                 const result = await ProductModel.find({
@@ -101,15 +110,17 @@ const ProductController = {
                         { productName: { $regex: productName } },
                         { category: { $regex: category } }
                     ]
-                })
-                searchResult = result
+                }).sort({ createdAt: -1 })
+                const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
+                searchResult = location ? response : result
             } else {
                 const result = await ProductModel.find({
                     $or: [
                         { productName: { $regex: "" } }
                     ]
-                })
-                searchResult = result
+                }).sort({ createdAt: -1 })
+                const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
+                searchResult = location ? response : result
             }
 
             return res.status(200).json({
@@ -127,7 +138,7 @@ const ProductController = {
     updateProductInfo: async (req, res) => {
         try {
             const { productId } = req.params
-            const { productName, images, sell_location, category, condition, description, price, sellerNote, status } = req.body
+            const { productName, isPremium, images, sell_location, category, condition, description, price, sellerNote, status } = req.body
 
             let imgUrl = [];
             if (req.files.length > 0) {
@@ -151,10 +162,11 @@ const ProductController = {
                 productId: Joi.string().required(),
                 status: Joi.string().valid('sold', 'unsold'),
                 category: Joi.string(),
-                sell_location: Joi.string()
+                sell_location: Joi.string(),
+                isPremium: Joi.boolean()
             })
             const validData = dataSchema.validate({
-                status,
+                status, isPremium,
                 sell_location: sell_location?.toLowerCase(),
                 category, productName, images: imgUrl, condition, description, price, sellerNote, productId
             })

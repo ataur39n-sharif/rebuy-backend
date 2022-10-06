@@ -47,6 +47,11 @@ const dataSchema = new mongoose.Schema({
     PID: {
         type: mongoose.Types.ObjectId,
         ref: 'profile'
+    },
+    isPremium: {
+        type: Boolean,
+        default: false,
+        required: true
     }
     //contact info
 

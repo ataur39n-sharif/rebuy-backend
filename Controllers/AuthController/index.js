@@ -234,7 +234,7 @@ const AuthController = {
                 email: Joi.string().email().required(),
                 callBack_url: Joi.string().required()
             })
-            const validData = dataSchema.validate({ email, callBack_url })
+            const validData = dataSchema.validate({ email, callBack_url: callBack_url || "http://localhost:3000/reset-password" })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
@@ -266,6 +266,7 @@ const AuthController = {
             }
 
         } catch (error) {
+            console.log(error)
             return res.status(500).json({
                 success: false,
                 error: error.message

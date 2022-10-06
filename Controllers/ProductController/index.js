@@ -18,6 +18,35 @@ const ProductController = {
             })
         }
     },
+    //single product
+    singleProduct: async (req, res) => {
+        try {
+            //expected data
+            const dataSchema = Joi.object({
+                id: Joi.string().required()
+            })
+            //valid data
+            const validData = dataSchema.validate({ id: req.params?.id })
+
+            const productDetails = await ProductModel.findOne({ _id: validData.value.id })
+            const relatedProducts = await ProductModel.find({
+                $or: [
+                    { category: { $regex: productDetails?.category || "" } }
+                ]
+            }).limit(15).sort({ createdAt: -1 })
+
+            return res.status(200).json({
+                success: true,
+                productDetails,
+                relatedProducts
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: error.message
+            })
+        }
+    },
     //add new product
     newProduct: async (req, res) => {
         try {
@@ -80,7 +109,7 @@ const ProductController = {
         try {
             const { productName, category, premium, location } = req.query
             let searchResult = []
-            
+
             if (productName && !category) {
                 const result = await ProductModel.find({
                     $or: [

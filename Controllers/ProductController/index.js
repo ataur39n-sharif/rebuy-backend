@@ -80,7 +80,7 @@ const ProductController = {
         try {
             const { productName, category, premium, location } = req.query
             let searchResult = []
-
+            
             if (productName && !category) {
                 const result = await ProductModel.find({
                     $or: [

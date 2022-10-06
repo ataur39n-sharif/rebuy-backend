@@ -1,4 +1,5 @@
 const Joi = require("joi")
+const ProfileModel = require("../../Models/Profile/Profile.model")
 const UserModel = require("../../Models/User/User.model")
 
 const AdminController = {
@@ -62,6 +63,44 @@ const AdminController = {
             })
         }
     },
+    //get all users
+    getAllUser: async (req, res) => {
+        try {
+            const users = await UserModel.find().select('-password')
+            return res.status(200).json({
+                success: true,
+                users
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: error.message
+            })
+        }
+    },
+    //get single profile
+    getSingleUserInfo: async (req, res) => {
+        try {
+            const { id } = req.params
+            //expected data schema 
+            const dataSchema = Joi.object({
+                id: Joi.string().required()
+            })
+            const validData = dataSchema.validate({ id })
+            const userInfo = await UserModel.findOne({ PID: validData.value.id }).select('-password -_id -PID')
+            const profileInfo = await ProfileModel.findOne({ _id: validData.value.id }).select('-_id')
+            return res.status(200).json({
+                success: true,
+                userInfo,
+                profileInfo
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: error.message
+            })
+        }
+    }
 }
 
 module.exports = AdminController

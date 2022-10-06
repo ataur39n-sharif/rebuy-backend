@@ -47,6 +47,21 @@ const ProductController = {
             })
         }
     },
+    //own products
+    ownProducts: async (req, res) => {
+        try {
+            const products = await ProductModel.find({ PID: req.pid || "633afd483f4118b8e91a5141" })
+            return res.status(200).json({
+                success: true,
+                products
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: error.message
+            })
+        }
+    },
     //add new product
     newProduct: async (req, res) => {
         try {
@@ -145,7 +160,7 @@ const ProductController = {
                 }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
                 const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
                 searchResult = location ? response : result
-                
+
             } else {
                 const result = await ProductModel.find({
                     $or: [

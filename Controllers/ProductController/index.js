@@ -6,7 +6,7 @@ const ProductController = {
     //products list
     allProducts: async (req, res) => {
         try {
-            const products = await ProductModel.find()
+            const products = await ProductModel.find().populate('PID', 'phone account_status -_id')
             return res.status(200).json({
                 success: true,
                 products
@@ -28,12 +28,12 @@ const ProductController = {
             //valid data
             const validData = dataSchema.validate({ id: req.params?.id })
 
-            const productDetails = await ProductModel.findOne({ _id: validData.value.id })
+            const productDetails = await ProductModel.findOne({ _id: validData.value.id }).populate('PID', 'phone account_status -_id')
             const relatedProducts = await ProductModel.find({
                 $or: [
                     { category: { $regex: productDetails?.category || "" } }
                 ]
-            }).limit(15).sort({ createdAt: -1 })
+            }).limit(15).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
 
             return res.status(200).json({
                 success: true,
@@ -115,39 +115,43 @@ const ProductController = {
                     $or: [
                         { productName: { $regex: productName || "" } }
                     ]
-                }).sort({ createdAt: -1 })
+                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
                 const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
                 searchResult = location ? response : result
+
             } else if (category && !productName) {
                 const result = await ProductModel.find({
                     $or: [
                         { category: { $regex: category || "" } }
                     ]
-                }).sort({ createdAt: -1 })
+                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
                 const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
                 searchResult = location ? response : result
+
             } else if (premium && !category && !productName) {
                 const result = await ProductModel.find({
                     $or: [
                         { isPremium: premium }
                     ]
-                }).sort({ createdAt: -1 })
+                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
                 searchResult = result
+
             } else if (category && productName) {
                 const result = await ProductModel.find({
                     $or: [
                         { productName: { $regex: productName } },
                         { category: { $regex: category } }
                     ]
-                }).sort({ createdAt: -1 })
+                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
                 const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
                 searchResult = location ? response : result
+                
             } else {
                 const result = await ProductModel.find({
                     $or: [
                         { productName: { $regex: "" } }
                     ]
-                }).sort({ createdAt: -1 })
+                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
                 const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
                 searchResult = location ? response : result
             }
@@ -157,9 +161,10 @@ const ProductController = {
                 searchResult
             })
         } catch (error) {
+            console.log(error)
             return res.status(500).json({
                 success: false,
-                error: error.message
+                error: error
             })
         }
     },

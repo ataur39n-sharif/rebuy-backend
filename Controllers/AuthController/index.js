@@ -125,8 +125,6 @@ const AuthController = {
         try {
             const { token } = req.query
 
-            console.log(token)
-
             //expected data schema
             const dataSchema = Joi.object({
                 token: Joi.string().required(),
@@ -152,7 +150,7 @@ const AuthController = {
                 }
 
                 //create profile
-                const profile = await ProfileModel.create({ name: status.name, email: validToken.email })
+                const profile = await ProfileModel.create({ name: status.name, contact_email: validToken.email })
 
                 //update user email verify status
                 const updateEmailStatus = await UserModel.findOneAndUpdate({ email: validToken.email }, {
@@ -296,8 +294,12 @@ const AuthController = {
             const validJWT = jwt.verify(token, process.env.JWT_SECRET)
 
             if (validJWT) {
+                //hash password
+                const salt = bcrypt.genSaltSync(10);
+                const hash = bcrypt.hashSync(new_password, salt);
+
                 await UserModel.findOneAndUpdate({ email: validJWT.email }, {
-                    password: new_password
+                    password: hash
                 })
 
                 return res.status(200).json({

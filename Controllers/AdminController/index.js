@@ -1,5 +1,8 @@
 const Joi = require("joi")
+const moment = require("moment")
 const ProfileModel = require("../../Models/Profile/Profile.model")
+const PackageModel = require("../../Models/Shop/Package.model")
+const ShopModel = require("../../Models/Shop/Shop.model")
 const UserModel = require("../../Models/User/User.model")
 
 const AdminController = {
@@ -94,6 +97,74 @@ const AdminController = {
                 userInfo,
                 profileInfo
             })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: error.message
+            })
+        }
+    },
+    //approve shop package
+    approvePackage: async (req, res) => {
+        try {
+            const packageAction = ['pending', 'approved', 'reject']
+            const { id } = req.params
+            const { status } = req.body
+
+            //expected data
+            const dataSchema = Joi.object({
+                status: Joi.number().valid(0, 1, 2).required(),
+                id: Joi.string().required()
+            })
+            //valid data
+            const validData = dataSchema.validate({ status, id })
+            if (validData.error) {
+                return res.status(400).json({
+                    success: false,
+                    error: validData.error.details
+                })
+            }
+            const requestInfo = await PackageModel.findOne({ _id: id })
+            if (!requestInfo) {
+                return res.status(200).json({
+                    success: false,
+                    message: 'No request found. '
+                })
+            }
+            if (status === 1 && requestInfo.status === packageAction[status]) {
+                return res.status(200).json({
+                    success: false,
+                    message: "Request already approved."
+                })
+            }
+            if (status === 2 || status === 0) {
+                await PackageModel.findOneAndUpdate({ _id: id }, { status: packageAction[status] })
+                return res.status(200).json({
+                    success: true,
+                    message: "Updated successfully."
+                })
+            }
+            const shopInfo = await ShopModel.findOne({ _id: requestInfo.shopId })
+
+            let newExpDate;
+            if (shopInfo.status === 'expired') {
+                newExpDate = moment().add(requestInfo.selectPackage, 'months')
+            } else {
+                newExpDate = moment(shopInfo.validity).add(requestInfo.selectPackage, 'months')
+            }
+            console.log(newExpDate)
+
+            const updateShopExp = await ShopModel.findOneAndUpdate({ _id: requestInfo.shopId }, {
+                status: "running",
+                validity: newExpDate
+            })
+            const updateRequestInfo = await PackageModel.findOneAndUpdate({ _id: id }, { status: packageAction[status] })
+
+            return res.status(200).json({
+                success: true,
+                message: "Update successfully."
+            })
+
         } catch (error) {
             return res.status(500).json({
                 success: false,

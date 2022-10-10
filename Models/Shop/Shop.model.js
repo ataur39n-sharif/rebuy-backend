@@ -34,9 +34,19 @@ const dataSchema = new mongoose.Schema({
             closeTime: "6pm"
         }
     },
+    status: {
+        type: String,
+        enum: ['expired', 'running'],
+        default: 'expired'
+    },
     owner: {
         type: mongoose.Types.ObjectId,
         ref: 'profile',
+        required: true
+    },
+    validity: {
+        type: Date,
+        default: Date.now(),
         required: true
     }
 }, {

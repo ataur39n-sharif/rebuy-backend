@@ -6,5 +6,6 @@ router
     .use('/shop', require('./ShopRoutes'))
     .use('/product', require('./ProductRoutes'))
     .use('/admin', require('./AdminRoutes'))
+    .use('/analytics', require('./AnalyticsRoutes'))
 
 module.exports = router

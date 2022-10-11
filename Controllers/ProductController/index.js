@@ -35,6 +35,10 @@ const ProductController = {
                 ]
             }).limit(15).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
 
+            if (productDetails) {
+                await ProductModel.updateOne({ _id: validData.value.id }, { totalView: productDetails.totalView + 1 })
+            }
+
             return res.status(200).json({
                 success: true,
                 productDetails,

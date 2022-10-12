@@ -22,7 +22,7 @@ const AnalyticsController = {
             if (validData.error) {
                 return res.status(200).json({
                     success: false,
-                    error: validData.error.details
+                    error: validData.error.message
                 })
             }
 

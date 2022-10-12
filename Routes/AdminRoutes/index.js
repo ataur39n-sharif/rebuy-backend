@@ -7,5 +7,6 @@ AdminRoute
     .get('/users', AdminController.getAllUser)
     .get('/user/:id', AdminController.getSingleUserInfo)
     .post('/package/:id', AdminController.approvePackage)
+    .delete('/delete-user/:id', AdminController.delete_user_as_admin)
 
 module.exports = AdminRoute

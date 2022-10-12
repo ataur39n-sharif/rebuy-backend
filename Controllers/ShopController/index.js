@@ -61,7 +61,7 @@ const ShopController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.details,
+                    error: validData.error.message,
                     // validData
                 })
             }
@@ -114,7 +114,7 @@ const ShopController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.details
+                    error: validData.error.message
                 })
             }
 

@@ -31,7 +31,7 @@ const AdminController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.details
+                    error: validData.error.message
                 })
             }
             if (status && !role) {
@@ -121,7 +121,7 @@ const AdminController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.details
+                    error: validData.error.message
                 })
             }
             const requestInfo = await PackageModel.findOne({ _id: id })
@@ -165,6 +165,23 @@ const AdminController = {
                 message: "Update successfully."
             })
 
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                error: error.message
+            })
+        }
+    },
+    //delete user as admin
+    delete_user_as_admin: async (req, res) => {
+        try {
+            const { id } = req.params
+            //delete from a
+            await UserModel.findOneAndDelete({ _id: id })
+            return res.status(200).json({
+                success: true,
+                message: 'Delete successfully .'
+            })
         } catch (error) {
             return res.status(500).json({
                 success: false,

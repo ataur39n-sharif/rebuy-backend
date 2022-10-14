@@ -7,7 +7,7 @@ const getFileLink = async (type, file) => {
     } catch (error) {
         return {
             success: false,
-            error: error.message
+            message: error.message
         }
     }
 }

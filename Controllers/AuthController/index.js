@@ -21,7 +21,7 @@ const AuthController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message
+                    message: validData.error.message
                 })
             }
 
@@ -50,6 +50,8 @@ const AuthController = {
             return res.status(200).json({
                 success: true,
                 role: user.role,
+                email,
+                pid: user.PID,
                 token: `Bearer ${token}`
             })
 
@@ -57,7 +59,7 @@ const AuthController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -77,7 +79,7 @@ const AuthController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message
+                    message: validData.error.message
                 })
             }
 
@@ -116,7 +118,7 @@ const AuthController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -133,7 +135,7 @@ const AuthController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message
+                    message: validData.error.message
                 })
             }
             //verify token
@@ -171,7 +173,7 @@ const AuthController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -189,7 +191,7 @@ const AuthController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message
+                    message: validData.error.message
                 })
             }
 
@@ -219,7 +221,7 @@ const AuthController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -236,7 +238,7 @@ const AuthController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message
+                    message: validData.error.message
                 })
             }
 
@@ -267,7 +269,7 @@ const AuthController = {
             console.log(error)
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -286,7 +288,7 @@ const AuthController = {
             if (!accessToken || validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message || "Invalid request ."
+                    message: validData.error.message || "Invalid request ."
                 })
             }
 
@@ -310,7 +312,7 @@ const AuthController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -329,7 +331,7 @@ const AuthController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: 'Invalid request .',
+                    message: 'Invalid request .',
                     hints: validData.error.message
                 })
             }
@@ -351,7 +353,7 @@ const AuthController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -368,7 +370,7 @@ const AuthController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     }

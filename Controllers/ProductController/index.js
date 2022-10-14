@@ -14,7 +14,7 @@ const ProductController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -47,7 +47,7 @@ const ProductController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -62,7 +62,7 @@ const ProductController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -105,7 +105,7 @@ const ProductController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message
+                    message: validData.error.message
                 })
             }
 
@@ -119,7 +119,7 @@ const ProductController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -183,7 +183,7 @@ const ProductController = {
             console.log(error)
             return res.status(500).json({
                 success: false,
-                error: error
+                message: error
             })
         }
     },
@@ -226,7 +226,7 @@ const ProductController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message
+                    message: validData.error.message
                 })
             }
 
@@ -240,7 +240,7 @@ const ProductController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -260,7 +260,7 @@ const ProductController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message
+                    message: validData.error.message
                 })
             }
 
@@ -289,7 +289,7 @@ const ProductController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },

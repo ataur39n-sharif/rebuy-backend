@@ -61,7 +61,7 @@ const ShopController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message,
+                    message: validData.error.message,
                     // validData
                 })
             }
@@ -77,7 +77,7 @@ const ShopController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -114,7 +114,7 @@ const ShopController = {
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    error: validData.error.message
+                    message: validData.error.message
                 })
             }
 
@@ -128,7 +128,7 @@ const ShopController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     },
@@ -150,7 +150,7 @@ const ShopController = {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                error: error.message
+                message: error.message
             })
         }
     }

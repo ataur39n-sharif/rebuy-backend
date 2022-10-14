@@ -6,7 +6,7 @@ const AuthorizeUser = async (req, res, next) => {
         if (!headersToken) {
             return res.status(400).json({
                 success: false,
-                error: "UnAuthorize Access .!"
+                message: "UnAuthorize Access .!"
             })
         }
         const token = headersToken.split(" ")[1]
@@ -20,14 +20,14 @@ const AuthorizeUser = async (req, res, next) => {
         } else {
             return res.status(400).json({
                 success: false,
-                error: "UnAuthorize Access .!"
+                message: "UnAuthorize Access .!"
             })
         }
 
     } catch (error) {
         return res.status(500).json({
             success: false,
-            error: error.message
+            message: error.message
         })
     }
 }

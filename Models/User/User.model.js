@@ -13,10 +13,9 @@ const dataSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    access_Status: {
-        type: String,
-        enum: ['blocked', 'unBlocked'],
-        default: "unBlocked"
+    access_permission: {
+        type: Boolean,
+        default: true
     },
     role: {
         type: String,

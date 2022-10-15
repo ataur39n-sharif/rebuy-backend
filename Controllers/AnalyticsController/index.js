@@ -4,6 +4,34 @@ const moment = require("moment")
 const AnalyticsModel = require("../../Models/Analytics/Analytics.model")
 
 const AnalyticsController = {
+    //get full analytics data
+    getFullAnalytics: async (req, res) => {
+        try {
+            const analyticsData = await AnalyticsModel.find().select('date visitor product_view click -_id')
+            //total visitor
+            let visitor = 0;
+            //total view
+            let view = 0;
+            // total click
+            let click = 0;
+            for (let i = 0; i < analyticsData.length; i++) {
+                const element = analyticsData[i];
+                visitor = visitor + element.visitor;
+                view = view + element.product_view;
+                click = click + element.click
+            }
+            return res.status(200).json({
+                success: true,
+                visitor, view, click,
+                analyticsData
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
     //update status
     updateStatus: async (req, res) => {
         try {

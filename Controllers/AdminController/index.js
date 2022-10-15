@@ -11,19 +11,19 @@ const AdminController = {
         try {
             const { role, status, email } = req.query
             //list
-            const access_Status = ['blocked', 'unBlocked']
+            // const access_Status = ['blocked', 'unBlocked']
             const roleList = ['admin', 'user']
 
             //expected data
             const dataSchema = Joi.object({
                 email: Joi.string().email().required(),
-                access_Status: Joi.number().valid(0, 1),
+                access_permission: Joi.boolean(),
                 role: Joi.number().valid(0, 1)
             })
 
             //valid data
             const validData = dataSchema.validate({
-                access_Status: status && Number(status),
+                access_permission: status,
                 email: email,
                 role: role && Number(role)
             })
@@ -36,7 +36,7 @@ const AdminController = {
             }
             if (status && !role) {
                 await UserModel.findOneAndUpdate({ email: validData.value.email }, {
-                    access_Status: access_Status[validData.value.access_Status]
+                    access_permission: validData.value.access_permission
                 })
             } else if (role && !status) {
                 await UserModel.findOneAndUpdate({ email: validData.value.email }, {
@@ -44,7 +44,7 @@ const AdminController = {
                 })
             } else if (role && status) {
                 await UserModel.findOneAndUpdate({ email: validData.value.email }, {
-                    access_Status: access_Status[validData.value.access_Status],
+                    access_permission: validData.value.access_permission,
                     role: roleList[validData.value.role]
                 })
             } else {
@@ -84,14 +84,14 @@ const AdminController = {
     //get single profile
     getSingleUserInfo: async (req, res) => {
         try {
-            const { id } = req.params
+            const { email } = req.query
             //expected data schema 
             const dataSchema = Joi.object({
-                id: Joi.string().required()
+                email: Joi.string().email().required()
             })
-            const validData = dataSchema.validate({ id })
-            const userInfo = await UserModel.findOne({ PID: validData.value.id }).select('-password -_id -PID')
-            const profileInfo = await ProfileModel.findOne({ _id: validData.value.id }).select('-_id')
+            const validData = dataSchema.validate({ email })
+            const userInfo = await UserModel.findOne({ email: validData.value.email }).select('-password -_id -updatedAt')
+            const profileInfo = await ProfileModel.findOne({ _id: userInfo?.PID }).select('-_id -updatedAt')
             return res.status(200).json({
                 success: true,
                 userInfo,

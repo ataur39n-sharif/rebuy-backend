@@ -1,4 +1,5 @@
 const Joi = require("joi")
+const axios = require("axios")
 const ProductModel = require("../../Models/Product/Product.model")
 const getFileLink = require("../../utils/FileUpload/FileUpload.utils")
 const validObjectId = require("../../utils/validator/mongo-objectId.validator")
@@ -28,15 +29,16 @@ const ProductController = {
             //valid data
             const validData = dataSchema.validate({ id: req.params?.id })
 
-            const productDetails = await ProductModel.findOne({ _id: validData.value.id }).populate('PID', 'phone account_status -_id')
+            const productDetails = await ProductModel.findOne({ _id: validData.value.id }).populate('PID', 'phone account_status contact_email name -_id')
             const relatedProducts = await ProductModel.find({
                 $or: [
                     { category: { $regex: productDetails?.category || "" } }
                 ]
-            }).limit(15).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
+            }).limit(15).populate('PID', 'phone account_status  contact_email name -_id').sort({ createdAt: -1 })
 
             if (productDetails) {
                 await ProductModel.updateOne({ _id: validData.value.id }, { totalView: productDetails.totalView + 1 })
+                await axios.put(`https://shop-api.ataur.dev/analytics?type=product_view`)
             }
 
             return res.status(200).json({
@@ -100,7 +102,7 @@ const ProductController = {
             const validData = dataSchema.validate({
                 productName,
                 sell_location: sell_location.toLowerCase(),
-                images: imgUrl, condition, category, description, price, sellerNote, PID: "633afd483f4118b8e91a5141"
+                images: imgUrl, condition, category, description, price, sellerNote, PID: "634b07052279632adf1ef247"
             })
             if (validData.error) {
                 return res.status(400).json({

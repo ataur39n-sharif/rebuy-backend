@@ -36,6 +36,10 @@ const dataSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    totalClick: {
+        type: Number,
+        default: 0
+    },
     sell_location: {
         type: String,
         required: true

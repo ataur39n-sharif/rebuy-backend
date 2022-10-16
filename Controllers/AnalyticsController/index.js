@@ -2,6 +2,7 @@ const Joi = require("joi")
 
 const moment = require("moment")
 const AnalyticsModel = require("../../Models/Analytics/Analytics.model")
+const ProductModel = require("../../Models/Product/Product.model")
 
 const AnalyticsController = {
     //get full analytics data
@@ -35,7 +36,7 @@ const AnalyticsController = {
     //update status
     updateStatus: async (req, res) => {
         try {
-            const { type, product_view, click } = req.query
+            const { type, id } = req.query
             //expected data schema
             const dataSchema = Joi.object({
                 type: Joi.string().valid('visitor', 'product_view', 'click').required(),
@@ -43,7 +44,7 @@ const AnalyticsController = {
             })
             //valid data
             const validData = dataSchema.validate({
-                type: 'visitor',
+                type: type,
                 date: moment().format('YYYY-MM-DD')
             })
 
@@ -63,15 +64,15 @@ const AnalyticsController = {
             if (validData.value.type === 'visitor') {
                 await AnalyticsModel.findOneAndUpdate({ date: validData.value.date }, { visitor: latestData.visitor + 1 })
             } else if (validData.value.type === 'product_view') {
-                await AnalyticsModel.findOneAndUpdate({ date: validData.value.date }, { visitor: latestData.product_view + 1 })
+                await AnalyticsModel.findOneAndUpdate({ date: validData.value.date }, { product_view: latestData.product_view + 1 })
             } else if (validData.value.type === 'click') {
-                await AnalyticsModel.findOneAndUpdate({ date: validData.value.date }, { visitor: latestData.click + 1 })
+                const product = await ProductModel.findOne({ _id: id })
+                await AnalyticsModel.findOneAndUpdate({ date: validData.value.date }, { click: latestData.click + 1 })
+                await ProductModel.findOneAndUpdate({ _id: id }, { totalClick: product.totalClick + 1 })
             }
 
             return res.status(200).json({
                 success: true,
-                todayListed,
-                validData: validData.value
             })
         } catch (error) {
             return res.status(500).json({

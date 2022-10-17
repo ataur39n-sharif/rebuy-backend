@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
     },
 
     filename: function (req, file, cb) {
-        cb(null, date + file.originalname.trim())
+        cb(null, date + file.originalname.trim().replace(/ /g,''))
     }
 })
 

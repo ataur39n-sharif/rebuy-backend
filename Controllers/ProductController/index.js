@@ -71,10 +71,9 @@ const ProductController = {
     //add new product
     newProduct: async (req, res) => {
         try {
-
             let imgUrl = [];
-            if (req.files.length > 0) {
-                for (let i = 0; i <= req.files.length; i++) {
+            if (req?.files?.length > 0) {
+                for (let i = 0; i <= req?.files?.length; i++) {
                     const element = req.files[i];
                     const generateUrl = await getFileLink('product', element)
                     if (generateUrl.success) {

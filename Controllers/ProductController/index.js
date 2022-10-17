@@ -38,7 +38,7 @@ const ProductController = {
 
             if (productDetails) {
                 await ProductModel.updateOne({ _id: validData.value.id }, { totalView: productDetails.totalView + 1 })
-                await axios.put(`https://shop-api.ataur.dev/analytics?type=product_view`)
+                await axios.put(`${process.env.API_URL}/analytics?type=product_view`)
             }
 
             return res.status(200).json({
@@ -56,7 +56,7 @@ const ProductController = {
     //own products
     ownProducts: async (req, res) => {
         try {
-            const products = await ProductModel.find({ PID: req.pid || "633afd483f4118b8e91a5141" })
+            const products = await ProductModel.find({ PID: req.PID })
             return res.status(200).json({
                 success: true,
                 products
@@ -101,7 +101,7 @@ const ProductController = {
             const validData = dataSchema.validate({
                 productName,
                 sell_location: sell_location.toLowerCase(),
-                images: imgUrl, condition, category, description, price, sellerNote, PID: "634b07052279632adf1ef247"
+                images: imgUrl, condition, category, description, price, sellerNote, PID
             })
             if (validData.error) {
                 return res.status(400).json({
@@ -111,16 +111,18 @@ const ProductController = {
             }
 
             //create product
-            await ProductModel.create({ ...validData.value })
+            const response = await ProductModel.create({ ...validData.value })
             return res.status(200).json({
                 success: true,
-                message: 'Product created successfully.'
+                message: 'Product created successfully.',
+                response
             })
 
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                message: error.message
+                message: error.message,
+
             })
         }
     },
@@ -257,7 +259,7 @@ const ProductController = {
                 permission: Joi.string().required()
             })
             //valid data
-            const validData = dataSchema.validate({ productId, permission: PID || "633afd483f4118b8e91a5141" })
+            const validData = dataSchema.validate({ productId, permission: PID })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,

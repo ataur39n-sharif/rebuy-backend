@@ -3,11 +3,37 @@ const ProfileModel = require("../../Models/Profile/Profile.model");
 const getFileLink = require("../../utils/FileUpload/FileUpload.utils");
 
 const ProfileController = {
+    //get profile info
+    getProfileInfo: async (req, res) => {
+        try {
+            //expected data schema 
+            const dataSchema = Joi.object({
+                id: Joi.string().required()
+            })
+            const validData = dataSchema.validate({ id: req.PID })
+            if (validData.error) {
+                return res.status(400).json({
+                    success: false,
+                    message: validData.error.message
+                })
+            }
+            const profileInfo = await ProfileModel.findOne({ _id: validData.value.id }).select('-_id -updatedAt -createdAt')
+            return res.status(200).json({
+                success: true,
+                profileInfo
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
     //update profile
     updateProfile: async (req, res) => {
         try {
 
-            const pid = req.pid || "633afd483f4118b8e91a5141"
+            const pid = req.PID
 
             let imgUrl;
             if (req.file) {
@@ -46,7 +72,7 @@ const ProfileController = {
     uploadNid: async (req, res) => {
         try {
             const { nid_number } = req.body
-            const pid = req.pid || "633afd483f4118b8e91a5141"
+            const pid = req.PID
 
             let imgUrl;
             if (req.file) {

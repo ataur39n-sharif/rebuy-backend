@@ -33,6 +33,18 @@ const AuthController = {
                     message: 'User not found !!'
                 })
             }
+            if (!user.emailVerified) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Email not verified. '
+                })
+            }
+            if (!user.access_permission) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'This account is temporary block. '
+                })
+            }
             const haveAccess = bcrypt.compareSync(validData.value.password, user.password);
 
             if (!haveAccess) {
@@ -66,7 +78,7 @@ const AuthController = {
     //registration
     registration: async (req, res) => {
         try {
-            const { name, email, password, acc_verify_url } = req.body
+            const { name, email, password } = req.body
 
             //data validation
             const dataSchema = Joi.object({
@@ -75,7 +87,7 @@ const AuthController = {
                 password: Joi.string().required(),
                 callBack_url: Joi.string().required()
             })
-            const validData = dataSchema.validate({ name, email, password, callBack_url: acc_verify_url || 'http://localhost:3000' })
+            const validData = dataSchema.validate({ name, email, password, callBack_url: process.env.LIVE_WEBSITE })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,

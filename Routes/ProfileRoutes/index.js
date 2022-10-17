@@ -5,6 +5,7 @@ const profileUpload = require('../../Middlewares/multer/profile.upload')
 const ProfileRoute = require('express').Router()
 
 ProfileRoute
+    .get('/', ProfileController.getProfileInfo)
     .put('/', profileUpload.single('picture'), ProfileController.updateProfile)
     .post('/submit-nid', nidUpload.single('nid_img'), ProfileController.uploadNid)
 

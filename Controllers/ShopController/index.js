@@ -46,7 +46,7 @@ const ShopController = {
             const validData = dataSchema.validate({
                 shopName, shopLocation, TIN,
                 image: imgUrl,
-                owner: '633afd483f4118b8e91a5141',
+                owner: req.PID,
                 availAbleTime: {
                     openTime,
                     closeTime

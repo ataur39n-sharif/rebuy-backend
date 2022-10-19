@@ -1,5 +1,6 @@
 const Joi = require("joi")
 const moment = require("moment")
+const ProductModel = require("../../Models/Product/Product.model")
 const ProfileModel = require("../../Models/Profile/Profile.model")
 const PackageModel = require("../../Models/Shop/Package.model")
 const ShopModel = require("../../Models/Shop/Shop.model")
@@ -172,6 +173,34 @@ const AdminController = {
             })
         }
     },
+    //handle premium Product
+    updateToPremiumProduct: async (req, res) => {
+        try {
+            const { id, result } = req.query
+            const dataSchema = Joi.object({
+                id: Joi.string().required(),
+                result: Joi.boolean().required()
+            })
+            const validData = dataSchema.validate({ id, result })
+            if (validData.error) {
+                return res.status(400).json({
+                    success: false,
+                    message: validData.error.message
+                })
+            }
+
+            await ProductModel.findOneAndUpdate({ _id: id }, { isPremium: result })
+            return res.status(200).json({
+                success: true,
+                message: 'Action complete.'
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
     //delete user as admin
     delete_user_as_admin: async (req, res) => {
         try {
@@ -181,6 +210,52 @@ const AdminController = {
             return res.status(200).json({
                 success: true,
                 message: 'Delete successfully .'
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+    //get all nid submit request
+    getAllNidRequest: async (req, res) => {
+        try {
+            const allRequest = await ProfileModel.find().sort({ updatedAt: - 1 })
+            return res.status(200).json({
+                success: true,
+                allRequest
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: true,
+                message: error.message
+            })
+        }
+    },
+    //approve nid request
+    approveNid: async (req, res) => {
+        try {
+            const { id, result } = req.query
+            //expected data
+            const dataSchema = Joi.object({
+                id: Joi.string().required(),
+                result: Joi.boolean().required()
+            })
+            const validData = dataSchema.validate({ id, result })
+            if (validData.error) {
+                return res.status(400).json({
+                    success: false,
+                    message: validData.error.message
+                })
+            }
+
+            const account_status = validData.value.result === true ? 'verified' : "reject"
+            await ProfileModel.findOneAndUpdate({ _id: id }, { account_status })
+
+            return res.status(200).json({
+                success: true,
+                message: 'Action Completed.'
             })
         } catch (error) {
             return res.status(500).json({

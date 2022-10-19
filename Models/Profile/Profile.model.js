@@ -28,7 +28,7 @@ const dataSchema = new mongoose.Schema({
     },
     account_status: {
         type: String,
-        enum: ['verified', 'not_verified', 'pending'],
+        enum: ['verified', 'not_verified', 'pending', 'reject'],
         default: 'not_verified'
     }
 }, {

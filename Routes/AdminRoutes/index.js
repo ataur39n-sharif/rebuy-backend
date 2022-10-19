@@ -9,6 +9,7 @@ AdminRoute
     .get('/nid-request', AdminController.getAllNidRequest)
     .put('/nid-request', AdminController.approveNid)
     .put('/premium-product', AdminController.updateToPremiumProduct)
+    .get('/package-request', AdminController.getAllPackageRequest)
     .post('/package/:id', AdminController.approvePackage)
     .delete('/delete-user/:id', AdminController.delete_user_as_admin)
 

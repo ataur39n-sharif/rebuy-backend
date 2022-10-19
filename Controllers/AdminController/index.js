@@ -105,6 +105,21 @@ const AdminController = {
             })
         }
     },
+    //get all package request
+    getAllPackageRequest: async (req, res) => {
+        try {
+            const requestList = await PackageModel.find().sort({ updatedAt: -1 })
+            return res.status(200).json({
+                success: true,
+                requestList
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
     //approve shop package
     approvePackage: async (req, res) => {
         try {

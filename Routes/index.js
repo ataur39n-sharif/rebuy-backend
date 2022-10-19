@@ -7,7 +7,7 @@ router
     .use('/profile', AuthorizeUser, require('./ProfileRoutes'))
     .use('/shop', AuthorizeUser, require('./ShopRoutes'))
     .use('/product', require('./ProductRoutes'))
-    .use('/admin',AuthorizeUser, require('./AdminRoutes'))
+    .use('/admin', require('./AdminRoutes'))
     .use('/analytics', require('./AnalyticsRoutes'))
 
 module.exports = router

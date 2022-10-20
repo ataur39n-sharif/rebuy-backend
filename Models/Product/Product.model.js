@@ -56,8 +56,11 @@ const dataSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
         required: true
+    },
+    shopId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'shop'
     }
-    //contact info
 
 }, {
     timestamps: true,

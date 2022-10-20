@@ -30,6 +30,11 @@ const dataSchema = new mongoose.Schema({
         type: String,
         enum: ['verified', 'not_verified', 'pending', 'reject'],
         default: 'not_verified'
+    },
+    shop_information: {
+        type: mongoose.Types.ObjectId,
+        ref: "shop",
+        default: null
     }
 }, {
     timestamps: true,

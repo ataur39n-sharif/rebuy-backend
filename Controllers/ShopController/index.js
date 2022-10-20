@@ -1,5 +1,6 @@
 const Joi = require("joi")
 const moment = require("moment")
+const ProfileModel = require("../../Models/Profile/Profile.model")
 const PackageModel = require("../../Models/Shop/Package.model")
 const ShopModel = require("../../Models/Shop/Shop.model")
 const getFileLink = require("../../utils/FileUpload/FileUpload.utils")
@@ -68,6 +69,7 @@ const ShopController = {
 
             //create shop
             const shop = await ShopModel.create({ ...validData.value })
+            await ProfileModel.findOneAndUpdate({ _id: validData.value.owner }, { shop_information: shop._id })
             const purchasePackage = await PackageModel.create({ ...validData.value.packageInfo, shopId: shop._id, })
             return res.status(200).json({
                 success: true,
@@ -142,6 +144,7 @@ const ShopController = {
             //validate data
             const validData = dataSchema.validate({ shopId: req.params.id })
             await ShopModel.findOneAndDelete({ _id: validData.value.shopId })
+            await ProfileModel.findOneAndUpdate({ _id: req.PID }, { shop_id: null })
 
             return res.status(200).json({
                 success: true,

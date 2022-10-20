@@ -17,7 +17,9 @@ const ProfileController = {
                     message: validData.error.message
                 })
             }
-            const profileInfo = await ProfileModel.findOne({ _id: validData.value.id }).select('-_id -updatedAt -createdAt')
+            const profileInfo = await ProfileModel.findOne({ _id: validData.value.id })
+                .populate('shop_information')
+                .select('-_id -updatedAt -createdAt')
             return res.status(200).json({
                 success: true,
                 profileInfo

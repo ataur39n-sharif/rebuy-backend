@@ -3,6 +3,7 @@ const axios = require("axios")
 const ProductModel = require("../../Models/Product/Product.model")
 const getFileLink = require("../../utils/FileUpload/FileUpload.utils")
 const validObjectId = require("../../utils/validator/mongo-objectId.validator")
+const CategoryModel = require("../../Models/Product/Category.model")
 const ProductController = {
     //products list
     allProducts: async (req, res) => {
@@ -296,6 +297,119 @@ const ProductController = {
             })
         }
     },
+    //delete category
+    getAllCategory: async (req, res) => {
+        try {
+            const list = await CategoryModel.find()
+            return res.status(200).json({
+                success: true,
+                list
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+    //create category
+    createCategory: async (req, res) => {
+        try {
+            const { name, value, icon } = req.body
+
+            //expected data 
+            const dataSchema = Joi.object({
+                name: Joi.string().required(),
+                value: Joi.string().required(),
+                icon: Joi.string().required()
+            })
+            //valid data
+            const validData = dataSchema.validate({ name, value, icon })
+
+            if (validData.error) {
+                return res.status(400).json({
+                    success: false,
+                    message: validData.error.message
+                })
+            }
+
+            await CategoryModel.create({ ...validData.value })
+            return res.status(200).json({
+                success: true,
+                message: "Created success."
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+    // update category
+    updateCategory: async (req, res) => {
+        try {
+            const { id } = req.query
+            const { name, value, icon } = req.body
+
+            //expected data 
+            const dataSchema = Joi.object({
+                id: Joi.string().required(),
+                name: Joi.string(),
+                value: Joi.string(),
+                icon: Joi.string()
+            })
+            //valid data
+            const validData = dataSchema.validate({ id, value, name, icon })
+
+            if (validData.error) {
+                return res.status(400).json({
+                    success: false,
+                    message: validData.error.message
+                })
+            }
+
+            await CategoryModel.findOneAndUpdate({ _id: id }, { ...validData.value })
+
+            return res.status(200).json({
+                success: true,
+                message: "success."
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+    //delete category
+    deleteCategory: async (req, res) => {
+        try {
+            const { id } = req.query
+            const dataSchema = Joi.object({
+                id: Joi.string().required()
+            })
+            const validData = dataSchema.validate({ id })
+            if (validData.error) {
+                return res.status(400).json({
+                    success: false,
+                    message: validData.error.message
+                })
+            }
+
+            await CategoryModel.findOneAndDelete({ _id: validData.value.id })
+
+            return res.status(200).json({
+                success: true,
+                message: "success."
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    }
 }
 
 module.exports = ProductController

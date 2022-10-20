@@ -124,8 +124,9 @@ const AdminController = {
     approvePackage: async (req, res) => {
         try {
             const packageAction = ['pending', 'approved', 'reject']
-            const { id } = req.params
-            const { status } = req.body
+            // const { id } = req.params
+            // const { status } = req.body
+            const { id, status } = req.query
 
             //expected data
             const dataSchema = Joi.object({

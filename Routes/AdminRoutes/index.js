@@ -10,7 +10,7 @@ AdminRoute
     .put('/nid-request', AdminController.approveNid)
     .put('/premium-product', AdminController.updateToPremiumProduct)
     .get('/package-request', AdminController.getAllPackageRequest)
-    .post('/package/:id', AdminController.approvePackage)
+    .put('/package-request', AdminController.approvePackage)
     .delete('/delete-user/:id', AdminController.delete_user_as_admin)
 
 module.exports = AdminRoute

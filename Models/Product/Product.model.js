@@ -60,6 +60,10 @@ const dataSchema = new mongoose.Schema({
     shopId: {
         type: mongoose.Types.ObjectId,
         ref: 'shop'
+    },
+    isApproved: {
+        type: Boolean,
+        default: false
     }
 
 }, {

@@ -190,7 +190,7 @@ const AdminController = {
         }
     },
     //handle premium Product
-    updateToPremiumProduct: async (req, res) => {
+    approveProduct: async (req, res) => {
         try {
             const { id, result } = req.query
             const dataSchema = Joi.object({
@@ -205,7 +205,7 @@ const AdminController = {
                 })
             }
 
-            await ProductModel.findOneAndUpdate({ _id: id }, { isPremium: result })
+            await ProductModel.findOneAndUpdate({ _id: id }, { isApproved: result })
             return res.status(200).json({
                 success: true,
                 message: 'Action complete.'
@@ -272,6 +272,21 @@ const AdminController = {
             return res.status(200).json({
                 success: true,
                 message: 'Action Completed.'
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+    //get all product
+    getAllProduct: async (req, res) => {
+        try {
+            const products = await ProductModel.find()
+            return res.status(200).json({
+                success: true,
+                products
             })
         } catch (error) {
             return res.status(500).json({

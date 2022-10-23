@@ -8,7 +8,15 @@ const ProductController = {
     //products list
     allProducts: async (req, res) => {
         try {
-            const products = await ProductModel.find().populate('PID', 'phone account_status -_id')
+            let products = []
+
+            if (req.role == 'admin') {
+                const result = await ProductModel.find().populate('PID', 'phone account_status -_id')
+                products = result
+            } else {
+                const result = await ProductModel.find({ isApproved: true }).populate('PID', 'phone account_status -_id')
+                products = result
+            }
             return res.status(200).json({
                 success: true,
                 products

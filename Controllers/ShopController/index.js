@@ -6,6 +6,22 @@ const ShopModel = require("../../Models/Shop/Shop.model")
 const getFileLink = require("../../utils/FileUpload/FileUpload.utils")
 
 const ShopController = {
+    //get shop information
+    getShopInfo: async (req, res) => {
+        try {
+            const shopInfo = await ShopModel.findOne({ owner: req.PID })
+            return res.status(200).json({
+                success: true,
+                shopInfo
+            })
+
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
     //create shop
     create_shop: async (req, res) => {
         try {

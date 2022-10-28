@@ -59,7 +59,8 @@ const dataSchema = new mongoose.Schema({
     },
     shopId: {
         type: mongoose.Types.ObjectId,
-        ref: 'shop'
+        ref: 'shop',
+        default: null
     },
     isApproved: {
         type: Boolean,

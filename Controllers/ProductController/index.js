@@ -4,6 +4,7 @@ const ProductModel = require("../../Models/Product/Product.model")
 const getFileLink = require("../../utils/FileUpload/FileUpload.utils")
 const validObjectId = require("../../utils/validator/mongo-objectId.validator")
 const CategoryModel = require("../../Models/Product/Category.model")
+const ProfileModel = require("../../Models/Profile/Profile.model")
 const ProductController = {
     //products list
     allProducts: async (req, res) => {
@@ -11,10 +12,14 @@ const ProductController = {
             let products = []
 
             if (req.role == 'admin') {
-                const result = await ProductModel.find().populate('PID', 'phone account_status -_id')
+                const result = await ProductModel.find()
+                    .populate('PID', 'phone account_status -_id')
+                    .populate('shopId')
                 products = result
             } else {
-                const result = await ProductModel.find({ isApproved: true }).populate('PID', 'phone account_status -_id')
+                const result = await ProductModel.find({ isApproved: true })
+                    .populate('PID', 'phone account_status -_id')
+                    .populate('shopId')
                 products = result
             }
             return res.status(200).json({
@@ -38,12 +43,17 @@ const ProductController = {
             //valid data
             const validData = dataSchema.validate({ id: req.params?.id })
 
-            const productDetails = await ProductModel.findOne({ _id: validData.value.id }).populate('PID', 'phone account_status contact_email name -_id')
+            const productDetails = await ProductModel.findOne({ _id: validData.value.id })
+                .populate('PID', 'phone account_status shop_information contact_email name -_id')
+                .populate('shopId')
             const relatedProducts = await ProductModel.find({
                 $or: [
                     { category: { $regex: productDetails?.category || "" } }
                 ]
-            }).limit(15).populate('PID', 'phone account_status  contact_email name -_id').sort({ createdAt: -1 })
+            }).limit(15)
+                .populate('PID', 'phone account_status shop_information  contact_email name -_id')
+                .populate('shopId')
+                .sort({ createdAt: -1 })
 
             if (productDetails) {
                 await ProductModel.updateOne({ _id: validData.value.id }, { totalView: productDetails.totalView + 1 })
@@ -92,9 +102,11 @@ const ProductController = {
             }
 
             const { productName, images, sell_location, category, condition, description, price, sellerNote } = req.body
-
+            console.log(req.body);
             const PID = req.PID
+            const user = await ProfileModel.findOne({ _id: PID })
 
+            console.log(typeof (user.shop_information?.toString()));
             //data validation
             const dataSchema = Joi.object({
                 productName: Joi.string().required(),
@@ -105,17 +117,18 @@ const ProductController = {
                 PID: Joi.string().required(),
                 images: Joi.array(),
                 category: Joi.string().required(),
-                sell_location: Joi.string().required()
+                sell_location: Joi.string().required(),
+                shopId: Joi.string(),
             })
             const validData = dataSchema.validate({
                 productName,
                 sell_location: sell_location.toLowerCase(),
-                images: imgUrl, condition, category, description, price, sellerNote, PID
+                images: imgUrl, condition, category, description, price, sellerNote, PID, shopId: user?.shop_information?.toString(),
             })
             if (validData.error) {
                 return res.status(400).json({
                     success: false,
-                    message: validData.error.message
+                    message: validData.error.message,
                 })
             }
 
@@ -143,6 +156,7 @@ const ProductController = {
 
             if (productName && !category) {
                 const result = await ProductModel.find({
+                    isApproved: true,
                     $or: [
                         { productName: { $regex: productName || "" } }
                     ]
@@ -152,6 +166,7 @@ const ProductController = {
 
             } else if (category && !productName) {
                 const result = await ProductModel.find({
+                    isApproved: true,
                     $or: [
                         { category: { $regex: category || "" } }
                     ]
@@ -161,6 +176,7 @@ const ProductController = {
 
             } else if (premium && !category && !productName) {
                 const result = await ProductModel.find({
+                    isApproved: true,
                     $or: [
                         { isPremium: premium }
                     ]
@@ -169,6 +185,7 @@ const ProductController = {
 
             } else if (category && productName) {
                 const result = await ProductModel.find({
+                    isApproved: true,
                     $or: [
                         { productName: { $regex: productName } },
                         { category: { $regex: category } }
@@ -179,6 +196,7 @@ const ProductController = {
 
             } else {
                 const result = await ProductModel.find({
+                    isApproved: true,
                     $or: [
                         { productName: { $regex: "" } }
                     ]

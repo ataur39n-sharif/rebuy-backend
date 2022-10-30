@@ -52,11 +52,6 @@ const dataSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'profile'
     },
-    isPremium: {
-        type: Boolean,
-        default: false,
-        required: true
-    },
     shopId: {
         type: mongoose.Types.ObjectId,
         ref: 'shop',

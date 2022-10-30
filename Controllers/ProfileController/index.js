@@ -34,9 +34,7 @@ const ProfileController = {
     //update profile
     updateProfile: async (req, res) => {
         try {
-
             const pid = req.PID
-
             let imgUrl;
             if (req.file) {
                 const generateUrl = await getFileLink('profile', req.file)

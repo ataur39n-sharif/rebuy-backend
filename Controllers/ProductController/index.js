@@ -160,7 +160,10 @@ const ProductController = {
                     $or: [
                         { productName: { $regex: productName || "" } }
                     ]
-                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
+                })
+                    .populate('PID', 'phone account_status -_id')
+                    .populate('shopId')
+                    .sort({ createdAt: -1 })
                 const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
                 searchResult = location ? response : result
 
@@ -170,7 +173,9 @@ const ProductController = {
                     $or: [
                         { category: { $regex: category || "" } }
                     ]
-                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
+                }).populate('PID', 'phone account_status -_id')
+                    .populate('shopId')
+                    .sort({ createdAt: -1 })
                 const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
                 searchResult = location ? response : result
 
@@ -180,7 +185,9 @@ const ProductController = {
                     $or: [
                         { isPremium: premium }
                     ]
-                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
+                }).populate('PID', 'phone account_status -_id')
+                    .populate('shopId')
+                    .sort({ createdAt: -1 })
                 searchResult = result
 
             } else if (category && productName) {
@@ -190,7 +197,9 @@ const ProductController = {
                         { productName: { $regex: productName } },
                         { category: { $regex: category } }
                     ]
-                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
+                }).populate('PID', 'phone account_status -_id')
+                    .populate('shopId')
+                    .sort({ createdAt: -1 })
                 const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
                 searchResult = location ? response : result
 
@@ -200,7 +209,9 @@ const ProductController = {
                     $or: [
                         { productName: { $regex: "" } }
                     ]
-                }).populate('PID', 'phone account_status -_id').sort({ createdAt: -1 })
+                }).populate('PID', 'phone account_status -_id')
+                    .populate('shopId')
+                    .sort({ createdAt: -1 })
                 const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
                 searchResult = location ? response : result
             }

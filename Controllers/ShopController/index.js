@@ -102,6 +102,14 @@ const ShopController = {
     //update shop
     update_shop: async (req, res) => {
         try {
+            const shopInfo = await ShopModel.findOne({ _id: req.params.id })
+            if (!shopInfo) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Invalid update request.!'
+                })
+            }
+
             let imgUrl;
             if (req.file) {
                 const generateUrl = await getFileLink('shop', req.file)
@@ -120,12 +128,14 @@ const ShopController = {
                     openTime: Joi.string().required(),
                     closeTime: Joi.string().required()
                 }).optional(),
+                openTime: Joi.string(),
+                closeTime: Joi.string()
             })
             //valid data schema
             const validData = dataSchema.validate({
-                ...req.body, image: imgUrl, shopId: req.params.id, availAbleTime: req.body.availAbleTime && {
-                    openTime: JSON.parse(req.body.availAbleTime)?.openTime,
-                    closeTime: JSON.parse(req.body.availAbleTime)?.closeTime
+                ...req.body, image: imgUrl, shopId: req.params.id, availAbleTime: {
+                    openTime: req.body?.openTime ? req.body?.openTime : shopInfo.availAbleTime.openTime,
+                    closeTime: req.body?.closeTime ? req.body?.closeTime : shopInfo.availAbleTime.closeTime
                 }
             })
 
@@ -136,7 +146,7 @@ const ShopController = {
                 })
             }
 
-            //create shop
+            //update shop
             const shop = await ShopModel.findOneAndUpdate({ _id: validData.value.shopId }, { ...validData.value })
             return res.status(200).json({
                 success: true,

@@ -181,14 +181,11 @@ const ProductController = {
 
             } else if (premium && !category && !productName) {
                 const result = await ProductModel.find({
-                    isApproved: true,
-                    $or: [
-                        { isPremium: premium }
-                    ]
+                    isApproved: true
                 }).populate('PID', 'phone account_status -_id')
                     .populate('shopId')
                     .sort({ createdAt: -1 })
-                searchResult = result
+                searchResult = result.filter((each) => each.shopId?.status === 'running')
 
             } else if (category && productName) {
                 const result = await ProductModel.find({

@@ -160,6 +160,46 @@ const ShopController = {
             })
         }
     },
+    //update package
+    update_package: async (req, res) => {
+        try {
+            console.log(req.body);
+            const pid = req.PID
+            const user = await ProfileModel.findOne({ _id: pid })
+            if (!user?.shop_information) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid request."
+                })
+            }
+            const { selectPackage, payment_method, amount, trxId } = req.body
+            const dataSchema = Joi.object({
+                selectPackage: Joi.number().valid(2, 6, 12).required(),
+                payment_method: Joi.string().required(),
+                amount: Joi.number().required(),
+                trxId: Joi.string().required()
+            })
+            const validData = dataSchema.validate({
+                selectPackage, payment_method, amount, trxId
+            })
+            if (validData.error) {
+                return res.status(400).json({
+                    success: false,
+                    message: validData.error.message
+                })
+            }
+            await PackageModel.create({ ...validData.value, shopId: user.shop_information })
+            return res.status(200).json({
+                success: true,
+                message: "Request submitted successfully."
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error?.message
+            })
+        }
+    },
     //delete shop
     delete_shop: async (req, res) => {
         try {

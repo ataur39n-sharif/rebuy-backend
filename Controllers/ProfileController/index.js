@@ -69,6 +69,24 @@ const ProfileController = {
             })
         }
     },
+    //get nid upload status
+    getNidUploadStatus: async (req, res) => {
+        try {
+            const pid = req.PID
+            const info = await ProfileModel.findOne({ _id: pid })
+
+            return res.status(200).json({
+                success: true,
+                status: info.account_status,
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
+    //upload nid
     uploadNid: async (req, res) => {
         try {
             const { nid_number } = req.body

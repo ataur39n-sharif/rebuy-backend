@@ -29,6 +29,11 @@ const dataSchema = new mongoose.Schema({
     PID: {
         type: mongoose.Types.ObjectId,
         ref: 'profile'
+    },
+    provider: {
+        type: String,
+        enumL: ['general', 'google'],
+        default: 'general'
     }
 }, {
     timestamps: true,

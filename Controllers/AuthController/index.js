@@ -134,6 +134,64 @@ const AuthController = {
             })
         }
     },
+    //social login
+    google_login: async (req, res) => {
+        try {
+            const access = req.headers['authorization']
+            if (!access) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Invalid request.'
+                })
+            }
+            const data = jwt.verify(access, '****google_sign_in****')
+            const { name, email, email_verified, image } = data
+            //find user by email
+            const user = await UserModel.findOne({ email })
+            //if user do login 
+            if (!user) {
+                const salt = bcrypt.genSaltSync(10);
+                const hash = bcrypt.hashSync(String(Math.random() * 10000), salt);
+                const newUser = await UserModel.create({ name, email, password: hash, provider: 'google', emailVerified: email_verified })
+                // console.log(newUser);
+                //create profile
+                const profile = await ProfileModel.create({ name, contact_email: email, picture: image })
+                await UserModel.findOneAndUpdate({ email }, { PID: profile._id })
+
+
+                //generate accessToken for user and return as response
+                const token = jwt.sign({ email: newUser.email, role: newUser?.role, PID: profile._id }, process.env.JWT_SECRET, {
+                    expiresIn: '24h'
+                })
+
+                return res.status(200).json({
+                    success: true,
+                    role: newUser.role,
+                    email,
+                    pid: newUser.PID,
+                    token: `Bearer ${token}`
+                })
+            }
+
+            //generate accessToken for user and return as response
+            const token = jwt.sign({ email: user.email, role: user.role, PID: user.PID }, process.env.JWT_SECRET, {
+                expiresIn: '24h'
+            })
+
+            return res.status(200).json({
+                success: true,
+                role: user.role,
+                email,
+                pid: user.PID,
+                token: `Bearer ${token}`
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            })
+        }
+    },
     //email confirmation
     email_confirmation: async (req, res) => {
         try {

@@ -6,6 +6,7 @@ const ProfileRoute = require('express').Router()
 
 ProfileRoute
     .get('/', ProfileController.getProfileInfo)
+    .get('/status', ProfileController.getNidUploadStatus)
     .put('/', profileUpload.single('picture'), ProfileController.updateProfile)
     .post('/submit-nid', nidUpload.single('nid_img'), ProfileController.uploadNid)
 

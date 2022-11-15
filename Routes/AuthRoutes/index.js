@@ -5,6 +5,7 @@ const AuthRoute = require('express').Router()
 
 AuthRoute
     .post('/login', AuthController.login)
+    .get('/google', AuthController.google_login)
     .post('/register', AuthController.registration)
     .get('/email-confirmation', AuthController.email_confirmation)
     .post('/resend-confirm-mail', AuthController.resend_verification_mail)

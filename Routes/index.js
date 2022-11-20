@@ -10,5 +10,6 @@ router
     .use('/category', require('./ProductRoutes/category.routes'))
     .use('/admin', require('./AdminRoutes'))
     .use('/analytics', require('./AnalyticsRoutes'))
+    .use('/ads', require('./Ads'))
 
 module.exports = router

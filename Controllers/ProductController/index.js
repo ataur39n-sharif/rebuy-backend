@@ -312,7 +312,7 @@ const ProductController = {
             }
 
             const product = await ProductModel.findOne({ _id: validData.value.productId })
-            if (product.PID.toString() === validData.value.permission) {
+            if (product.PID.toString() === validData.value.permission || req.role === 'admin') {
                 await ProductModel.findOneAndDelete({ _id: validData.value.productId })
                 return res.status(200).json({
                     success: true,

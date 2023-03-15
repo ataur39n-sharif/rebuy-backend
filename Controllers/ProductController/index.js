@@ -6,6 +6,7 @@ const validObjectId = require("../../utils/validator/mongo-objectId.validator")
 const CategoryModel = require("../../Models/Product/Category.model")
 const ProfileModel = require("../../Models/Profile/Profile.model")
 const ProductController = {
+
     //products list
     allProducts: async (req, res) => {
         try {
@@ -154,68 +155,83 @@ const ProductController = {
             const { productName, category, premium, location } = req.query
             let searchResult = []
 
-            if (productName && !category) {
-                const result = await ProductModel.find({
-                    isApproved: true,
-                    $or: [
-                        { productName: { $regex: productName || "" } }
-                    ]
-                })
-                    .populate('PID', 'phone account_status -_id')
-                    .populate('shopId')
-                    .sort({ createdAt: -1 })
-                const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
-                searchResult = location ? response : result
+            // if (productName && !category) {
+            //     const result = await ProductModel.find({
+            //         isApproved: true,
+            //         $or: [
+            //             { productName: { $regex: productName || "" } }
+            //         ]
+            //     })
+            //         .populate('PID', 'phone account_status -_id')
+            //         .populate('shopId')
+            //         .sort({ createdAt: -1 })
+            //     const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
+            //     searchResult = location ? response : result
 
-            } else if (category && !productName) {
-                const result = await ProductModel.find({
-                    isApproved: true,
-                    $or: [
-                        { category: { $regex: category || "" } }
-                    ]
-                }).populate('PID', 'phone account_status -_id')
-                    .populate('shopId')
-                    .sort({ createdAt: -1 })
-                const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
-                searchResult = location ? response : result
+            // } else if (category && !productName) {
+            //     const result = await ProductModel.find({
+            //         isApproved: true,
+            //         $or: [
+            //             { category: { $regex: category || "" } }
+            //         ]
+            //     }).populate('PID', 'phone account_status -_id')
+            //         .populate('shopId')
+            //         .sort({ createdAt: -1 })
+            //     const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
+            //     searchResult = location ? response : result
 
-            } else if (premium && !category && !productName) {
-                const result = await ProductModel.find({
-                    isApproved: true
-                }).populate('PID', 'phone account_status -_id')
-                    .populate('shopId')
-                    .sort({ createdAt: -1 })
-                searchResult = result.filter((each) => each.shopId?.status === 'running')
+            // } else if (premium && !category && !productName) {
+            //     const result = await ProductModel.find({
+            //         isApproved: true
+            //     }).populate('PID', 'phone account_status -_id')
+            //         .populate('shopId')
+            //         .sort({ createdAt: -1 })
+            //     searchResult = result.filter((each) => each.shopId?.status === 'running')
 
-            } else if (category && productName) {
-                const result = await ProductModel.find({
-                    isApproved: true,
-                    $or: [
-                        { productName: { $regex: productName } },
-                        { category: { $regex: category } }
-                    ]
-                }).populate('PID', 'phone account_status -_id')
-                    .populate('shopId')
-                    .sort({ createdAt: -1 })
-                const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
-                searchResult = location ? response : result
+            // } else if (category && productName) {
+            //     const result = await ProductModel.find({
+            //         isApproved: true,
+            //         $or: [
+            //             { productName: { $regex: productName } },
+            //             { category: { $regex: category } }
+            //         ]
+            //     }).populate('PID', 'phone account_status -_id')
+            //         .populate('shopId')
+            //         .sort({ createdAt: -1 })
+            //     const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
+            //     searchResult = location ? response : result
 
-            } else {
-                const result = await ProductModel.find({
-                    isApproved: true,
-                    $or: [
-                        { productName: { $regex: "" } }
-                    ]
-                }).populate('PID', 'phone account_status -_id')
-                    .populate('shopId')
-                    .sort({ createdAt: -1 })
-                const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
-                searchResult = location ? response : result
+            // } else {
+            //     const result = await ProductModel.find({
+            //         isApproved: true,
+            //         $or: [
+            //             { productName: { $regex: "" } }
+            //         ]
+            //     }).populate('PID', 'phone account_status -_id')
+            //         .populate('shopId')
+            //         .sort({ createdAt: -1 })
+            //     const response = result.filter((eachData) => eachData.sell_location === location?.trim().toLowerCase())
+            //     searchResult = location ? response : result
+            // }
+
+            // Construct the filter object based on the filter options.
+
+            const filterObj = {};
+
+            if (productName) {
+                filterObj.title = { $regex: productName, $options: 'i' };
             }
 
+            // Add a category filter.
+            if (category) {
+                filterObj.category = category;
+            }
+
+            const products = await ProductModel.find(filterObj)
             return res.status(200).json({
                 success: true,
-                searchResult
+                searchResult: products.length,
+                products
             })
         } catch (error) {
             console.log(error)

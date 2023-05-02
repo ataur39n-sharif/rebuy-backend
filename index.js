@@ -6,7 +6,6 @@ const path = require('path')
 const mongoose = require('mongoose')
 const mailTransporter = require('./Config/NodeMailer/nodemailer.config')
 
-
 const app = express()
 app.use(cors())
 app.use(express.json())
